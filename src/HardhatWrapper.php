@@ -14,9 +14,9 @@ class HardhatWrapper
     }
 
     /**
-     * @param string $command The Hardhat command (e.g., 'compile', 'run').
-     * @param array $args Command-line arguments.
-     * @param array $env Environment variables.
+     * @param  string  $command  The Hardhat command (e.g., 'compile', 'run').
+     * @param  array  $args  Command-line arguments.
+     * @param  array  $env  Environment variables.
      * @return string The command's standard output.
      */
     public function runCommand(string $command, array $args = [], array $env = []): string
