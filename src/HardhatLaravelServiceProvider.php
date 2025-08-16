@@ -2,9 +2,9 @@
 
 namespace Roberts\HardhatLaravel;
 
+use Roberts\HardhatLaravel\Commands\HardhatLaravelCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Roberts\HardhatLaravel\Commands\HardhatLaravelCommand;
 
 class HardhatLaravelServiceProvider extends PackageServiceProvider
 {
