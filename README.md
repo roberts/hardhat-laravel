@@ -7,17 +7,46 @@
 
 This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
 
-## Support us
+## Laravel & Hardhat Installation
 
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/hardhat-laravel.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/hardhat-laravel)
+Before installing this package, you need to create the monorepo structure with an app folder for your Laravel application and a blockchain folder for Hardhat.
 
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
+Install Laravel within a dedicated subdirectory. This keeps all of Laravel's files and dependencies self-contained.
 
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+```Bash
+composer create-project laravel/laravel app
+```
+
+This command creates a new Laravel project in the app directory.
+
+Now, create a separate subdirectory for your Hardhat project and initialize it.
+
+```Bash
+mkdir blockchain
+cd blockchain
+npm init -y
+npm install --save-dev hardhat
+npx hardhat
+```
+
+The npx hardhat command prompts you to create a new project. Select the "Create a JavaScript project" or "Create a TypeScript project" option to generate the necessary files, including hardhat.config.js, contracts/, scripts/, and test/.
+
+To prevent unnecessary files from being committed to your repository, set up a .gitignore file at the root of your monorepo. This file should tell Git to ignore the node_modules and vendor directories from both projects, as they contain heavy, temporary files.
+
+```
+/app/vendor/
+/app/.env
+/blockchain/node_modules/
+/blockchain/cache/
+/blockchain/artifacts/
+/blockchain/.env
+```
+
+Then move the Laravel .github folder to the root of your monorepo.
 
 ## Installation
 
-You can install the package via composer:
+Inside the app folder for the Laravel application you can install the package via composer:
 
 ```bash
 composer require roberts/hardhat-laravel
