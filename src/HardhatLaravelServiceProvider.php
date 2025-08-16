@@ -3,6 +3,9 @@
 namespace Roberts\HardhatLaravel;
 
 use Roberts\HardhatLaravel\Commands\HardhatLaravelCommand;
+use Roberts\HardhatLaravel\Commands\HardhatCompileCommand;
+use Roberts\HardhatLaravel\Commands\HardhatRunCommand;
+use Roberts\HardhatLaravel\Commands\HardhatTestCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -20,7 +23,12 @@ class HardhatLaravelServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasMigration('create_hardhat_laravel_table')
-            ->hasCommand(HardhatLaravelCommand::class);
+            ->hasCommands([
+                HardhatLaravelCommand::class,
+                HardhatCompileCommand::class,
+                HardhatRunCommand::class,
+                HardhatTestCommand::class,
+            ]);
     }
 
     public function packageRegistered(): void

@@ -85,4 +85,32 @@ class HardhatWrapper
     {
         return $this->tryRun('run', array_merge([$scriptPath], $args), $env);
     }
+    
+    /**
+     * Run a Hardhat command and stream output via callback. Returns a structured result.
+     * The callback signature is fn(string $type, string $buffer): void where $type is 'out' or 'err'.
+     */
+    public function runStreaming(string $command, array $args = [], array $env = [], ?callable $onOutput = null): \Roberts\HardhatLaravel\Support\HardhatResult
+    {
+        $pending = Process::path($this->projectPath);
+        if (! empty($env)) {
+            $pending = $pending->env($env);
+        }
+
+        $callback = null;
+        if ($onOutput) {
+            $callback = function (string $type, string $buffer) use ($onOutput) {
+                $onOutput($type, $buffer);
+            };
+        }
+
+        $result = $pending->run(array_merge(['npx', 'hardhat', $command], $args), $callback);
+
+        return \Roberts\HardhatLaravel\Support\HardhatResult::fromProcessResult($result);
+    }
+
+    public function runScriptStreaming(string $scriptPath, array $args = [], array $env = [], ?callable $onOutput = null): \Roberts\HardhatLaravel\Support\HardhatResult
+    {
+        return $this->runStreaming('run', array_merge([$scriptPath], $args), $env, $onOutput);
+    }
 }

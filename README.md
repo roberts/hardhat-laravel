@@ -105,6 +105,12 @@ $output = Hardhat::compile();
 $deploy = Hardhat::runScript('scripts/deploy.ts', ['--network', 'sepolia'], [
 	'PRIVATE_KEY' => env('PRIVATE_KEY'),
 ]);
+
+// Non-throwing API
+$res = Hardhat::tryRun('compile');
+if (! $res->successful()) {
+	logger()->warning('Hardhat compile failed', $res->toArray());
+}
 ```
 
 Using dependency injection:
@@ -123,6 +129,12 @@ Errors are surfaced via `Illuminate\Process\Exceptions\ProcessFailedException` w
 ## Testing tips
 
 You can use `Process::fake()` to test your code without invoking Node/Hardhat.
+
+## Artisan commands
+
+- `php artisan hardhat:compile` — runs `npx hardhat compile`
+- `php artisan hardhat:run scripts/deploy.ts --arg=--network --arg=sepolia --env=PRIVATE_KEY=...` — runs a script
+- `php artisan hardhat:test --arg=--network --arg=localhost` — runs tests
 
 ## Testing
 
