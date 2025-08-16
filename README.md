@@ -5,9 +5,9 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/roberts/hardhat-laravel/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/roberts/hardhat-laravel/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/roberts/hardhat-laravel.svg?style=flat-square)](https://packagist.org/packages/roberts/hardhat-laravel)
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+This Laravel package is designed to control [Hardhat](https://hardhat.org) from a [Laravel](https://laravel.org) application through a monorepo with both applications installed in a specific structure. Please read the documentation below for proper creation:
 
-## Laravel & Hardhat Installation
+## Laravel & Hardhat Monorepo Creation
 
 Before installing this package, you need to create the monorepo structure with an app folder for your Laravel application and a blockchain folder for Hardhat.
 
