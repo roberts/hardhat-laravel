@@ -27,7 +27,7 @@ class HardhatWrapper
             $pending = $pending->env($env);
         }
 
-        $result = $pending->run(array_merge(['npx', 'hardhat', $command], $args));
+    $result = $pending->run(array_merge(['npx', 'hardhat', $command], $args));
 
         // Throws Illuminate\Process\Exceptions\ProcessFailedException on failure
         $result->throw();
@@ -43,5 +43,45 @@ class HardhatWrapper
     public function runScript(string $scriptPath, array $args = [], array $env = []): string
     {
         return $this->runCommand('run', array_merge([$scriptPath], $args), $env);
+    }
+
+    // Convenience methods
+    public function clean(): string
+    {
+        return $this->runCommand('clean');
+    }
+
+    public function test(array $args = [], array $env = []): string
+    {
+        return $this->runCommand('test', $args, $env);
+    }
+
+    public function node(array $args = [], array $env = []): string
+    {
+        // Run arbitrary node within hardhat context (e.g., --network)
+        return $this->runCommand('node', $args, $env);
+    }
+
+    public function help(string $subcommand = null): string
+    {
+        $args = $subcommand ? [$subcommand, '--help'] : ['--help'];
+        return $this->runCommand('', $args);
+    }
+
+    // Output helpers that do not throw
+    public function tryRun(string $command, array $args = [], array $env = []): \Roberts\HardhatLaravel\Support\HardhatResult
+    {
+        $pending = Process::path($this->projectPath);
+        if (! empty($env)) {
+            $pending = $pending->env($env);
+        }
+        $result = $pending->run(array_merge(['npx', 'hardhat', $command], $args));
+
+        return \Roberts\HardhatLaravel\Support\HardhatResult::fromProcessResult($result);
+    }
+
+    public function tryRunScript(string $scriptPath, array $args = [], array $env = []): \Roberts\HardhatLaravel\Support\HardhatResult
+    {
+        return $this->tryRun('run', array_merge([$scriptPath], $args), $env);
     }
 }
