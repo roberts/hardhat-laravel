@@ -32,6 +32,7 @@ class HardhatTestCommand extends Command
                 $env[$k] = $v;
             }
         }
+
         return $env;
     }
 }

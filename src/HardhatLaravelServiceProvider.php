@@ -2,8 +2,8 @@
 
 namespace Roberts\HardhatLaravel;
 
-use Roberts\HardhatLaravel\Commands\HardhatLaravelCommand;
 use Roberts\HardhatLaravel\Commands\HardhatCompileCommand;
+use Roberts\HardhatLaravel\Commands\HardhatLaravelCommand;
 use Roberts\HardhatLaravel\Commands\HardhatRunCommand;
 use Roberts\HardhatLaravel\Commands\HardhatTestCommand;
 use Spatie\LaravelPackageTools\Package;

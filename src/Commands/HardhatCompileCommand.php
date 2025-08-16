@@ -30,6 +30,7 @@ class HardhatCompileCommand extends Command
                 $env[$k] = $v;
             }
         }
+
         return $env;
     }
 }

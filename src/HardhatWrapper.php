@@ -85,7 +85,7 @@ class HardhatWrapper
     {
         return $this->tryRun('run', array_merge([$scriptPath], $args), $env);
     }
-    
+
     /**
      * Run a Hardhat command and stream output via callback. Returns a structured result.
      * The callback signature is fn(string $type, string $buffer): void where $type is 'out' or 'err'.

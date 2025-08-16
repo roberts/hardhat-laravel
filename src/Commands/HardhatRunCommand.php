@@ -33,6 +33,7 @@ class HardhatRunCommand extends Command
                 $env[$k] = $v;
             }
         }
+
         return $env;
     }
 }
