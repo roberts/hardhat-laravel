@@ -1,0 +1,5 @@
+<?php
+
+use Roberts\HardhatLaravel\Tests\TestCase;
+
+uses(TestCase::class)->in(__DIR__);
