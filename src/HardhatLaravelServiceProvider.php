@@ -27,6 +27,7 @@ class HardhatLaravelServiceProvider extends PackageServiceProvider
     {
         $this->app->singleton(HardhatWrapper::class, function ($app) {
             $path = config('hardhat-laravel.project_path', base_path('blockchain'));
+
             return new HardhatWrapper($path);
         });
     }

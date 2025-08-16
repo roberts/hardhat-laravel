@@ -27,7 +27,7 @@ class HardhatWrapper
             $pending = $pending->env($env);
         }
 
-    $result = $pending->run(array_merge(['npx', 'hardhat', $command], $args));
+        $result = $pending->run(array_merge(['npx', 'hardhat', $command], $args));
 
         // Throws Illuminate\Process\Exceptions\ProcessFailedException on failure
         $result->throw();
@@ -62,9 +62,10 @@ class HardhatWrapper
         return $this->runCommand('node', $args, $env);
     }
 
-    public function help(string $subcommand = null): string
+    public function help(?string $subcommand = null): string
     {
         $args = $subcommand ? [$subcommand, '--help'] : ['--help'];
+
         return $this->runCommand('', $args);
     }
 
