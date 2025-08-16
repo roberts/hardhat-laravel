@@ -65,7 +65,7 @@
                 "Roberts\\HardhatLaravel\\HardhatLaravelServiceProvider"
             ],
             "aliases": {
-                "HardhatLaravel": "Roberts\\HardhatLaravel\\Facades\\HardhatLaravel"
+                "Hardhat": "Roberts\\HardhatLaravel\\Facades\\Hardhat"
             }
         }
     },
