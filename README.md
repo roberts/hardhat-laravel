@@ -78,12 +78,51 @@ Optionally, you can publish the views using
 php artisan vendor:publish --tag="hardhat-laravel-views"
 ```
 
-## Usage
+## Configuration
+
+Publish the config and set your Hardhat project path (defaults to `base_path('blockchain')`):
 
 ```php
-$hardhatLaravel = new Roberts\HardhatLaravel();
-echo $hardhatLaravel->echoPhrase('Hello, Roberts!');
+// config/hardhat-laravel.php
+return [
+	'project_path' => env('HARDHAT_PROJECT_PATH', base_path('blockchain')),
+];
 ```
+
+Ensure Node.js, npm, and Hardhat are available in the environment. The wrapper executes commands via `npx hardhat` in the configured directory.
+
+## Usage
+
+Using the Facade:
+
+```php
+use Roberts\HardhatLaravel\Facades\Hardhat;
+
+// Compile contracts
+$output = Hardhat::compile();
+
+// Run a script with args and environment
+$deploy = Hardhat::runScript('scripts/deploy.ts', ['--network', 'sepolia'], [
+	'PRIVATE_KEY' => env('PRIVATE_KEY'),
+]);
+```
+
+Using dependency injection:
+
+```php
+use Roberts\HardhatLaravel\HardhatWrapper;
+
+public function deploy(HardhatWrapper $hardhat)
+{
+	return $hardhat->runScript('scripts/deploy.ts', ['--network', 'localhost']);
+}
+```
+
+Errors are surfaced via `Illuminate\Process\Exceptions\ProcessFailedException` when a command exits non‑zero.
+
+## Testing tips
+
+You can use `Process::fake()` to test your code without invoking Node/Hardhat.
 
 ## Testing
 

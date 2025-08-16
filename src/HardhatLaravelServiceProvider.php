@@ -22,4 +22,12 @@ class HardhatLaravelServiceProvider extends PackageServiceProvider
             ->hasMigration('create_hardhat_laravel_table')
             ->hasCommand(HardhatLaravelCommand::class);
     }
+
+    public function packageRegistered(): void
+    {
+        $this->app->singleton(HardhatWrapper::class, function ($app) {
+            $path = config('hardhat-laravel.project_path', base_path('blockchain'));
+            return new HardhatWrapper($path);
+        });
+    }
 }
