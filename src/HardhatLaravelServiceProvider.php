@@ -66,41 +66,7 @@ class HardhatLaravelServiceProvider extends PackageServiceProvider
             \Roberts\HardhatLaravel\Listeners\PersistDeployedContract::class
         );
 
-        // Model macros for ergonomic API (register at boot time to avoid early Model initialization)
-        \Roberts\Web3Laravel\Models\Contract::macro('verifyWithHardhat', function (array $options = []) {
-            /** @var \Roberts\Web3Laravel\Models\Contract $this */
-            $network = $options['network'] ?? null;
-            if (! $network && isset($this->chain_id)) {
-                $adapter = app(\Roberts\HardhatLaravel\Protocols\Evm\EvmChainRegistry::class)->forChainId((int) $this->chain_id);
-                $network = $adapter?->network();
-            }
-            if (! $network) {
-                throw new \InvalidArgumentException('Network is required for verification.');
-            }
-            $args = $options['constructor_args'] ?? [];
-            $env = $options['env'] ?? [];
-            dispatch(new \Roberts\HardhatLaravel\Jobs\VerifyContractJob($this->id, $network, $args, $env));
-        });
-
-        \Roberts\Web3Laravel\Models\Wallet::macro('deployArtifact', function (string $artifact, array $constructorArgs = [], array $opts = []) {
-            /** @var \Roberts\Web3Laravel\Models\Wallet $this */
-            // For now, reuse the CLI via Artisan call to keep logic centralized
-            $argsJson = json_encode(array_values($constructorArgs));
-            $command = 'web3:deploy';
-            $parameters = [
-                'artifact' => $artifact,
-                '--args' => $argsJson,
-                '--wallet-id' => (string) $this->id,
-            ];
-            if (isset($opts['chain_id'])) {
-                $parameters['--chain-id'] = (string) $opts['chain_id'];
-            }
-            if (isset($opts['network'])) {
-                $parameters['--network'] = (string) $opts['network'];
-            }
-
-            return \Illuminate\Support\Facades\Artisan::call($command, $parameters);
-        });
+    // Note: Eloquent Model doesn't include Macroable; macros are provided via helper class instead.
     }
 
     public function packageRegistered(): void
@@ -129,3 +95,4 @@ class HardhatLaravelServiceProvider extends PackageServiceProvider
         });
     }
 }
+

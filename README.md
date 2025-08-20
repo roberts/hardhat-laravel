@@ -7,7 +7,7 @@
 
 This Laravel package is designed to control [Hardhat](https://hardhat.org) from a [Laravel](https://laravel.org) application through a monorepo with both applications installed in a specific structure. Please read the documentation below for proper creation and server setup:
 
-See also: [Web3 integration guide](docs/web3.md) for using this alongside roberts/web3-laravel.
+See also: [Web3 integration guide](docs/web3.md) and [Hardhat scripts best practices](docs/scripts.md) for using this alongside roberts/web3-laravel.
 
 ## Package functionality
 
@@ -131,6 +131,64 @@ public function deploy(HardhatWrapper $hardhat)
 
 Errors are surfaced via `Illuminate\Process\Exceptions\ProcessFailedException` when a command exits non‑zero.
 
+### Wrapper example: build deploy data and enqueue a Transaction
+
+The snippet below shows how to call the recommended `scripts/deploy-data.ts` in your Hardhat project, parse its JSON, and enqueue a deploy Transaction using your own app services.
+
+```php
+use Roberts\HardhatLaravel\HardhatWrapper;
+use Roberts\Web3Laravel\Models\Transaction;
+
+public function deployContract(HardhatWrapper $hardhat): int
+{
+	// 1) Ask Hardhat for deploy data via a script that defines the contract internally
+	//    (recommended for servers: keep artifact/constructor config inside your Hardhat repo)
+	$json = $hardhat->runScript('scripts/server/deploy-my-contract.ts');
+
+	/** @var array{artifact:string,abi:array,bytecode:string,constructorArgs:array,data:string} $out */
+	$out = json_decode($json, true, flags: JSON_THROW_ON_ERROR);
+
+	// 2) Create a Transaction for contract creation (to = null)
+	$tx = Transaction::query()->create([
+		'wallet_id' => 1,
+		'blockchain_id' => 1,
+		'to' => null,
+		'value' => '0',
+		'data' => $out['data'],
+		'function' => 'deploy_contract',
+		'function_params' => [
+			'artifact' => $out['artifact'],
+			'constructor_args' => $out['constructorArgs'],
+			'abi_present' => true,
+		],
+		'meta' => [
+			'abi' => $out['abi'],
+			'bytecode' => $out['bytecode'],
+		],
+		'status' => 'pending',
+	]);
+
+	// The web3-laravel pipeline will prepare, sign, submit, and confirm this tx.
+	// On confirmation, the listener persists a Contract and may auto-verify or populate tokens/nfts.
+	return $tx->id;
+}
+```
+
+	### Eloquent-style helper on Wallet (deployContract)
+
+	For convenience, this package adds a `Wallet::deployContract($artifact, $constructorArgs = [], $opts = [])` macro that invokes the same `web3:deploy` flow and returns the created Transaction id (when parsed from output), for example:
+
+	```php
+	use Roberts\Web3Laravel\Models\Wallet;
+
+	$wallet = Wallet::query()->find(1);
+	$txId = $wallet->deployContract('<YourArtifactName>', ['arg1', 'arg2'], [
+		'chain_id' => 8453,
+		'network' => 'base',
+		'auto_verify' => true,
+	]);
+	```
+
 ## Testing tips
 
 You can use `Process::fake()` to test your code without invoking Node/Hardhat.
@@ -142,9 +200,11 @@ You can use `Process::fake()` to test your code without invoking Node/Hardhat.
 - `php artisan hardhat:test --arg=--network --arg=localhost` — runs tests (use `--hh-env=KEY=VALUE` for env vars)
 - `php artisan hardhat:update` — runs `npm update` in your Hardhat project (supports `--dry-run` and `--silent`)
 
-- `php artisan web3:deploy --artifact=MyToken --args='["arg1"]' --wallet-id=1 --chain-id=8453 --network=base` —
+- `php artisan web3:deploy --artifact="<YourArtifactName>" --script=scripts/deploy-data.ts --args='["arg1"]' --wallet-id=1 --chain-id=8453 --network=base` —
 	fetches deploy tx data from a Hardhat helper script, enqueues a Transaction (to=null, data=deployData), and relies on the
 	web3-laravel transaction pipeline to sign, broadcast, and confirm. On confirmation, a Contract row is persisted automatically.
+
+Production tip: Prefer a contract-specific Hardhat script (e.g., `scripts/server/deploy-my-contract.ts`) that hard-codes the artifact and constructor settings, then call it from Laravel without passing `--artifact`. See `docs/scripts.md` for patterns.
 
 If your layout differs and `../blockchain` isn’t correct, you’ll need to adjust your server structure to match.
 
