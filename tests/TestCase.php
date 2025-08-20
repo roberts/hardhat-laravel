@@ -12,9 +12,15 @@ class TestCase extends Orchestra
     {
         parent::setUp();
 
-        Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'Roberts\\HardhatLaravel\\Database\\Factories\\'.class_basename($modelName).'Factory'
-        );
+        Factory::guessFactoryNamesUsing(function (string $modelName) {
+            if (str_starts_with($modelName, 'Roberts\\Web3Laravel\\Models\\')) {
+                return 'Roberts\\Web3Laravel\\Database\\Factories\\'.class_basename($modelName).'Factory';
+            }
+
+            return 'Database\\Factories\\'.class_basename($modelName).'Factory';
+        });
+
+        // No-op: macros are exposed via helper class now.
     }
 
     protected function getPackageProviders($app)
@@ -27,11 +33,14 @@ class TestCase extends Orchestra
     public function getEnvironmentSetUp($app)
     {
         config()->set('database.default', 'testing');
+        config()->set('app.key', 'base64:'.base64_encode(str_repeat('a', 32)));
 
-        /*
-         foreach (\Illuminate\Support\Facades\File::allFiles(__DIR__ . '/database/migrations') as $migration) {
-            (include $migration->getRealPath())->up();
-         }
-         */
+        // Load web3-laravel migrations so its models/factories work in tests
+        $migs = base_path('vendor/roberts/web3-laravel/database/migrations');
+        if (is_dir($migs)) {
+            foreach (\Illuminate\Support\Facades\File::allFiles($migs) as $migration) {
+                (include $migration->getRealPath())->up();
+            }
+        }
     }
 }

@@ -7,7 +7,7 @@ use Roberts\HardhatLaravel\HardhatWrapper;
 
 class HardhatRunCommand extends Command
 {
-    protected $signature = 'hardhat:run {script : Path to hardhat script (ts/js)} {--arg=* : Pass-through args} {--env=* : Env vars KEY=VALUE}';
+    protected $signature = 'hardhat:run {script : Path to hardhat script (ts/js)} {--arg=* : Pass-through args} {--hh-env=* : Env vars KEY=VALUE}';
 
     protected $description = 'Run a hardhat script with optional args and env';
 
@@ -15,7 +15,7 @@ class HardhatRunCommand extends Command
     {
         $script = $this->argument('script');
         $args = $this->option('arg');
-        $env = $this->parseEnv($this->option('env'));
+        $env = $this->parseEnv($this->option('hh-env'));
 
         $result = $hardhat->runScriptStreaming($script, $args, $env, function ($type, $buffer) {
             $this->output->write($buffer);

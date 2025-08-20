@@ -7,13 +7,13 @@ use Roberts\HardhatLaravel\HardhatWrapper;
 
 class HardhatCompileCommand extends Command
 {
-    protected $signature = 'hardhat:compile {--env=* : Env vars in KEY=VALUE form}';
+    protected $signature = 'hardhat:compile {--hh-env=* : Env vars in KEY=VALUE form}';
 
     protected $description = 'Run hardhat compile in the configured project';
 
     public function handle(HardhatWrapper $hardhat): int
     {
-        $env = $this->parseEnv($this->option('env'));
+        $env = $this->parseEnv($this->option('hh-env'));
         $result = $hardhat->runStreaming('compile', [], $env, function ($type, $buffer) {
             $this->output->write($buffer);
         });

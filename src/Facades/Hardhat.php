@@ -3,6 +3,7 @@
 namespace Roberts\HardhatLaravel\Facades;
 
 use Illuminate\Support\Facades\Facade;
+use Roberts\HardhatLaravel\HardhatWrapper;
 
 /**
  * @method static string compile()
@@ -21,6 +22,6 @@ class Hardhat extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \Roberts\HardhatLaravel\HardhatWrapper::class;
+        return HardhatWrapper::class;
     }
 }
