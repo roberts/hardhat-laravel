@@ -2,8 +2,10 @@
 
 namespace Roberts\HardhatLaravel\Listeners;
 
+use Roberts\HardhatLaravel\Services\AbiService;
 use Roberts\Web3Laravel\Events\TransactionConfirmed;
 use Roberts\Web3Laravel\Models\Contract as Web3Contract;
+use Roberts\HardhatLaravel\Protocols\Evm\EvmChainRegistry;
 
 class PersistDeployedContract
 {
@@ -17,10 +19,10 @@ class PersistDeployedContract
             return;
         }
 
-        $abi = data_get($tx->meta, 'abi');
+    $abi = app(AbiService::class)->normalize(data_get($tx->meta, 'abi'));
         $creator = $tx->from;
 
-        Web3Contract::query()->firstOrCreate(
+        $contract = Web3Contract::query()->firstOrCreate(
             ['address' => $address],
             [
                 'blockchain_id' => $tx->blockchain_id,
@@ -28,5 +30,18 @@ class PersistDeployedContract
                 'abi' => $abi,
             ]
         );
+
+        // Optionally dispatch verification after persist if requested
+        $autoVerify = (bool) data_get($tx->meta, 'auto_verify', false);
+        if ($autoVerify) {
+            $network = data_get($tx->function_params, 'network');
+            if (! $network && $tx->chain_id) {
+                $adapter = app(EvmChainRegistry::class)->forChainId((int) $tx->chain_id);
+                $network = $adapter?->network();
+            }
+            if ($network) {
+                dispatch(new \Roberts\HardhatLaravel\Jobs\VerifyContractJob($contract->id, (string) $network, (array) data_get($tx->meta, 'constructor_args', [])));
+            }
+        }
     }
 }

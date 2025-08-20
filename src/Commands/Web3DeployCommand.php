@@ -20,6 +20,7 @@ class Web3DeployCommand extends Command
         {--network= : Hardhat network name (e.g., base, sepolia)}
         {--script=scripts/deploy-data.ts : Hardhat script that prints deploy data JSON}
         {--value=0 : Payable value in wei (decimal string)}
+    {--auto-verify : Automatically queue verification after confirmation}
         ';
 
     protected $description = 'Prepare and enqueue an EVM contract deployment transaction using Hardhat-provided deploy data.';
@@ -31,6 +32,7 @@ class Web3DeployCommand extends Command
         $network = $this->option('network');
         $script = (string) $this->option('script');
         $value = (string) $this->option('value');
+    $autoVerify = (bool) $this->option('auto-verify');
 
         // Quick pre-check: if neither wallet option is provided, fail fast before invoking Hardhat
         if (! $this->option('wallet-id') && ! $this->option('wallet-address')) {
@@ -116,6 +118,7 @@ class Web3DeployCommand extends Command
                 'abi' => $abi,
                 'constructor_args' => $constructorArgs,
                 'bytecode_len' => isset($payload['bytecode']) ? strlen((string) $payload['bytecode']) : null,
+                'auto_verify' => $autoVerify,
             ],
         ]);
 
