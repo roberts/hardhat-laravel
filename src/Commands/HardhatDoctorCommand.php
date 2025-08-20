@@ -3,8 +3,8 @@
 namespace Roberts\HardhatLaravel\Commands;
 
 use Illuminate\Console\Command;
-use Roberts\HardhatLaravel\HardhatWrapper;
 use Illuminate\Support\Facades\Process;
+use Roberts\HardhatLaravel\HardhatWrapper;
 
 class HardhatDoctorCommand extends Command
 {

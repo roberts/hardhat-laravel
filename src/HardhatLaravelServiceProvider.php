@@ -2,13 +2,13 @@
 
 namespace Roberts\HardhatLaravel;
 
+use Illuminate\Support\Facades\Log;
 use Roberts\HardhatLaravel\Commands\HardhatCompileCommand;
+use Roberts\HardhatLaravel\Commands\HardhatDoctorCommand;
 use Roberts\HardhatLaravel\Commands\HardhatLaravelCommand;
 use Roberts\HardhatLaravel\Commands\HardhatRunCommand;
-use Roberts\HardhatLaravel\Commands\HardhatDoctorCommand;
 use Roberts\HardhatLaravel\Commands\HardhatTestCommand;
 use Roberts\HardhatLaravel\Commands\HardhatUpdateCommand;
-use Illuminate\Support\Facades\Log;
 use Roberts\HardhatLaravel\Commands\Web3DeployCommand;
 use Roberts\HardhatLaravel\Protocols\Evm\AbstractChain\AbstractMainnetAdapter;
 use Roberts\HardhatLaravel\Protocols\Evm\ApeChain\ApeChainMainnetAdapter;
@@ -18,17 +18,17 @@ use Roberts\HardhatLaravel\Protocols\Evm\Ethereum\EthereumMainnetAdapter;
 use Roberts\HardhatLaravel\Protocols\Evm\EvmChainRegistry;
 use Roberts\HardhatLaravel\Protocols\Evm\Optimism\OptimismMainnetAdapter;
 
-        // Startup diagnostics: warn if the expected Hardhat directory/config is missing
-        $path = base_path('..'.DIRECTORY_SEPARATOR.'blockchain');
-        if (! is_dir($path)) {
-            Log::warning('[hardhat-laravel] Expected Hardhat project directory not found: '.$path.' — run "php artisan hardhat:doctor" to diagnose.');
-        } else {
-            $cfgJs = $path.DIRECTORY_SEPARATOR.'hardhat.config.js';
-            $cfgTs = $path.DIRECTORY_SEPARATOR.'hardhat.config.ts';
-            if (! file_exists($cfgJs) && ! file_exists($cfgTs)) {
-                Log::warning('[hardhat-laravel] Hardhat config not found in '.$path.' (missing hardhat.config.js/ts) — run "php artisan hardhat:doctor" to diagnose.');
-            }
-        }
+// Startup diagnostics: warn if the expected Hardhat directory/config is missing
+$path = base_path('..'.DIRECTORY_SEPARATOR.'blockchain');
+if (! is_dir($path)) {
+    Log::warning('[hardhat-laravel] Expected Hardhat project directory not found: '.$path.' — run "php artisan hardhat:doctor" to diagnose.');
+} else {
+    $cfgJs = $path.DIRECTORY_SEPARATOR.'hardhat.config.js';
+    $cfgTs = $path.DIRECTORY_SEPARATOR.'hardhat.config.ts';
+    if (! file_exists($cfgJs) && ! file_exists($cfgTs)) {
+        Log::warning('[hardhat-laravel] Hardhat config not found in '.$path.' (missing hardhat.config.js/ts) — run "php artisan hardhat:doctor" to diagnose.');
+    }
+}
 use Roberts\HardhatLaravel\Protocols\Evm\Polygon\PolygonMainnetAdapter;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
