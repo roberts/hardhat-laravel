@@ -1,13 +1,13 @@
 <?php
 
-use Roberts\HardhatLaravel\Protocols\Evm\EvmChainRegistry;
 use Roberts\HardhatLaravel\Protocols\Evm\Base\BaseMainnetAdapter;
 use Roberts\HardhatLaravel\Protocols\Evm\Ethereum\EthereumMainnetAdapter;
+use Roberts\HardhatLaravel\Protocols\Evm\EvmChainRegistry;
 
 it('registers and resolves adapters by chainId and network', function () {
-    $registry = new EvmChainRegistry();
-    $base = new BaseMainnetAdapter();
-    $eth = new EthereumMainnetAdapter();
+    $registry = new EvmChainRegistry;
+    $base = new BaseMainnetAdapter;
+    $eth = new EthereumMainnetAdapter;
 
     $registry->register($base);
     $registry->register($eth);

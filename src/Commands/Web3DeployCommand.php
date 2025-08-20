@@ -35,6 +35,7 @@ class Web3DeployCommand extends Command
         // Quick pre-check: if neither wallet option is provided, fail fast before invoking Hardhat
         if (! $this->option('wallet-id') && ! $this->option('wallet-address')) {
             $this->error('Signer wallet not found. Provide --wallet-id or --wallet-address.');
+
             return self::FAILURE;
         }
 
@@ -63,12 +64,14 @@ class Web3DeployCommand extends Command
             $out = $hardhat->runScript($script, $hhArgs);
         } catch (\Throwable $e) {
             $this->error('Hardhat script failed: '.$e->getMessage());
+
             return self::FAILURE;
         }
 
         $payload = json_decode(trim($out), true);
         if (! is_array($payload) || empty($payload['data'])) {
             $this->error('Invalid deploy JSON. Expected a top-level object with a "data" field.');
+
             return self::FAILURE;
         }
 
@@ -80,10 +83,12 @@ class Web3DeployCommand extends Command
         $wallet = $this->resolveWallet();
         if (! $wallet) {
             $this->error('Signer wallet not found. Provide --wallet-id or --wallet-address.');
+
             return self::FAILURE;
         }
         if (! $wallet->protocol->isEvm()) {
             $this->error('Signer wallet must be an EVM wallet.');
+
             return self::FAILURE;
         }
 

@@ -22,7 +22,7 @@ class CapturingHardhatWrapper extends HardhatWrapper
 
 it('infers --network from chain-id when not provided', function () {
     /** @var TestCase $this */
-    $fake = new CapturingHardhatWrapper();
+    $fake = new CapturingHardhatWrapper;
     $this->app->instance(HardhatWrapper::class, $fake);
 
     // No DB mocks needed; our CapturingHardhatWrapper throws before any model resolution.
