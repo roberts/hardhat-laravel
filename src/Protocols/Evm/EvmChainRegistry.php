@@ -6,6 +6,7 @@ class EvmChainRegistry
 {
     /** @var array<int,EvmChainAdapter> */
     protected array $byId = [];
+
     /** @var array<string,EvmChainAdapter> */
     protected array $byNetwork = [];
 

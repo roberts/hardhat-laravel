@@ -4,10 +4,10 @@ namespace Roberts\HardhatLaravel\Commands;
 
 use Illuminate\Console\Command;
 use Roberts\HardhatLaravel\HardhatWrapper;
+use Roberts\HardhatLaravel\Protocols\Evm\EvmChainRegistry;
 use Roberts\Web3Laravel\Models\Blockchain;
 use Roberts\Web3Laravel\Models\Transaction;
 use Roberts\Web3Laravel\Models\Wallet;
-use Roberts\HardhatLaravel\Protocols\Evm\EvmChainRegistry;
 
 class Web3DeployCommand extends Command
 {
@@ -28,7 +28,7 @@ class Web3DeployCommand extends Command
     {
         $artifact = (string) $this->argument('artifact');
         $argsJson = $this->option('args') ?? '[]';
-    $network = $this->option('network');
+        $network = $this->option('network');
         $script = (string) $this->option('script');
         $value = (string) $this->option('value');
 
@@ -36,10 +36,12 @@ class Web3DeployCommand extends Command
         $wallet = $this->resolveWallet();
         if (! $wallet) {
             $this->error('Signer wallet not found. Provide --wallet-id or --wallet-address.');
+
             return self::FAILURE;
         }
         if (! $wallet->protocol->isEvm()) {
             $this->error('Signer wallet must be an EVM wallet.');
+
             return self::FAILURE;
         }
 
@@ -70,12 +72,14 @@ class Web3DeployCommand extends Command
             $out = $hardhat->runScript($script, $hhArgs);
         } catch (\Throwable $e) {
             $this->error('Hardhat script failed: '.$e->getMessage());
+
             return self::FAILURE;
         }
 
         $payload = json_decode(trim($out), true);
         if (! is_array($payload) || empty($payload['data'])) {
             $this->error('Invalid deploy JSON. Expected a top-level object with a "data" field.');
+
             return self::FAILURE;
         }
 
@@ -123,6 +127,7 @@ class Web3DeployCommand extends Command
         if ($addr) {
             return Wallet::query()->where('address', $addr)->first();
         }
+
         return null;
     }
 }

@@ -13,9 +13,9 @@ use Roberts\HardhatLaravel\Protocols\Evm\ApeChain\ApeChainMainnetAdapter;
 use Roberts\HardhatLaravel\Protocols\Evm\Arbitrum\ArbitrumOneAdapter;
 use Roberts\HardhatLaravel\Protocols\Evm\Base\BaseMainnetAdapter;
 use Roberts\HardhatLaravel\Protocols\Evm\Ethereum\EthereumMainnetAdapter;
+use Roberts\HardhatLaravel\Protocols\Evm\EvmChainRegistry;
 use Roberts\HardhatLaravel\Protocols\Evm\Optimism\OptimismMainnetAdapter;
 use Roberts\HardhatLaravel\Protocols\Evm\Polygon\PolygonMainnetAdapter;
-use Roberts\HardhatLaravel\Protocols\Evm\EvmChainRegistry;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -62,15 +62,15 @@ class HardhatLaravelServiceProvider extends PackageServiceProvider
 
         // Register the EVM chain registry and built-in adapters
         $this->app->singleton(EvmChainRegistry::class, function ($app) {
-            $registry = new EvmChainRegistry();
+            $registry = new EvmChainRegistry;
             foreach ([
-                new EthereumMainnetAdapter(),
-                new BaseMainnetAdapter(),
-                new PolygonMainnetAdapter(),
-                new ArbitrumOneAdapter(),
-                new OptimismMainnetAdapter(),
-                new AbstractMainnetAdapter(),
-                new ApeChainMainnetAdapter(),
+                new EthereumMainnetAdapter,
+                new BaseMainnetAdapter,
+                new PolygonMainnetAdapter,
+                new ArbitrumOneAdapter,
+                new OptimismMainnetAdapter,
+                new AbstractMainnetAdapter,
+                new ApeChainMainnetAdapter,
             ] as $adapter) {
                 $registry->register($adapter);
             }
