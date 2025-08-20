@@ -13,6 +13,11 @@ class HardhatWrapper
         $this->projectPath = $projectPath;
     }
 
+    public function getProjectPath(): string
+    {
+        return $this->projectPath;
+    }
+
     /**
      * @param  string  $command  The Hardhat command (e.g., 'compile', 'run').
      * @param  array  $args  Command-line arguments.

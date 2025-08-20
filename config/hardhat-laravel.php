@@ -2,5 +2,5 @@
 
 // config for Roberts/HardhatLaravel
 return [
-    'project_path' => env('HARDHAT_PROJECT_PATH', base_path('../blockchain')),
+    // The Hardhat project path is fixed to a sibling ../blockchain directory.
 ];
