@@ -15,7 +15,7 @@ class TokenDetectionService
             return null;
         }
 
-    $has = fn(string $name, ?array $inputs = null) => $this->hasFunction($abi, $name, $inputs);
+        $has = fn (string $name, ?array $inputs = null) => $this->hasFunction($abi, $name, $inputs);
 
         // Heuristic detection
         $isErc20 = $has('totalSupply') && $has('decimals') && $has('symbol') && $has('name') && $has('balanceOf', [['type' => 'address']]);

@@ -18,9 +18,7 @@ class PopulateAssetRecordsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public function __construct(public int $contractId)
-    {
-    }
+    public function __construct(public int $contractId) {}
 
     public function handle(ContractCaller $caller, TokenDetectionService $detector): void
     {
@@ -37,10 +35,12 @@ class PopulateAssetRecordsJob implements ShouldQueue
         switch ($type) {
             case TokenType::ERC20:
                 $this->ensureErc20($contract, $caller);
+
                 return;
             case TokenType::ERC721:
             case TokenType::ERC1155:
                 $this->ensureNftCollection($contract, $caller, $type);
+
                 return;
             default:
                 return;
@@ -93,6 +93,7 @@ class PopulateAssetRecordsJob implements ShouldQueue
     {
         try {
             $res = $caller->call($contract->abi, (string) $contract->address, $function, []);
+
             return $res[0] ?? null;
         } catch (\Throwable $e) {
             return null;

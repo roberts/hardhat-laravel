@@ -5,8 +5,8 @@ use Roberts\HardhatLaravel\Jobs\PopulateAssetRecordsJob;
 use Roberts\HardhatLaravel\Tests\TestCase;
 use Roberts\Web3Laravel\Events\TransactionConfirmed;
 use Roberts\Web3Laravel\Models\Blockchain;
-use Roberts\Web3Laravel\Models\Transaction;
 use Roberts\Web3Laravel\Models\Contract;
+use Roberts\Web3Laravel\Models\Transaction;
 
 it('dispatches PopulateAssetRecordsJob when ABI is present on confirmed deploy', function () {
     /** @var TestCase $this */

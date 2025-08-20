@@ -33,7 +33,7 @@ it('creates a Token for ERC-20 ABI on populate job', function () {
     $caller->shouldReceive('call')->andReturn(['MyToken'], ['MTK'], [18], ['1000']);
 
     $job = new PopulateAssetRecordsJob($contract->id);
-    $job->handle($caller, new TokenDetectionService());
+    $job->handle($caller, new TokenDetectionService);
 
     $token = Token::query()->where('contract_id', $contract->id)->first();
     expect($token)->not->toBeNull();
@@ -64,7 +64,7 @@ it('creates an ERC-721 NftCollection on populate job', function () {
     $caller->shouldReceive('call')->andReturn(['CoolNFT'], ['COOL']);
 
     $job = new PopulateAssetRecordsJob($contract->id);
-    $job->handle($caller, new TokenDetectionService());
+    $job->handle($caller, new TokenDetectionService);
 
     $col = NftCollection::query()->where('contract_id', $contract->id)->first();
     expect($col)->not->toBeNull();
@@ -94,7 +94,7 @@ it('creates an ERC-1155 NftCollection with defaults if name/symbol missing', fun
     $caller->shouldReceive('call')->andReturn([], []);
 
     $job = new PopulateAssetRecordsJob($contract->id);
-    $job->handle($caller, new TokenDetectionService());
+    $job->handle($caller, new TokenDetectionService);
 
     $col = NftCollection::query()->where('contract_id', $contract->id)->first();
     expect($col)->not->toBeNull();

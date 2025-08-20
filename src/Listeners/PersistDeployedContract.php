@@ -2,11 +2,11 @@
 
 namespace Roberts\HardhatLaravel\Listeners;
 
+use Roberts\HardhatLaravel\Jobs\PopulateAssetRecordsJob;
 use Roberts\HardhatLaravel\Protocols\Evm\EvmChainRegistry;
 use Roberts\HardhatLaravel\Services\AbiService;
 use Roberts\Web3Laravel\Events\TransactionConfirmed;
 use Roberts\Web3Laravel\Models\Contract as Web3Contract;
-use Roberts\HardhatLaravel\Jobs\PopulateAssetRecordsJob;
 
 class PersistDeployedContract
 {
