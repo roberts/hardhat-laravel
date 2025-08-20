@@ -24,7 +24,7 @@ class MockHardhatWrapper extends HardhatWrapper
 
 it('validates hardhat project setup and reports missing directory', function () {
     /** @var TestCase $this */
-    
+
     // Mock a wrapper with non-existent path
     $mockWrapper = new MockHardhatWrapper('/non/existent/path');
     $this->app->instance(HardhatWrapper::class, $mockWrapper);
@@ -39,14 +39,14 @@ it('validates hardhat project setup and reports missing directory', function () 
 
 it('validates hardhat project setup successfully when directory exists', function () {
     /** @var TestCase $this */
-    
+
     // Create a temporary directory structure for testing
     $tempDir = sys_get_temp_dir().'/hardhat-test-'.uniqid();
     mkdir($tempDir, 0755, true);
-    
+
     // Create basic structure
     file_put_contents($tempDir.'/package.json', json_encode([
-        'devDependencies' => ['hardhat' => '^2.0.0']
+        'devDependencies' => ['hardhat' => '^2.0.0'],
     ]));
     file_put_contents($tempDir.'/hardhat.config.js', 'module.exports = {};');
     mkdir($tempDir.'/contracts');
@@ -73,7 +73,6 @@ it('validates hardhat project setup successfully when directory exists', functio
 
 it('shows detailed output with verbose flag', function () {
     /** @var TestCase $this */
-    
     $mockWrapper = new MockHardhatWrapper('/non/existent/path');
     $this->app->instance(HardhatWrapper::class, $mockWrapper);
 

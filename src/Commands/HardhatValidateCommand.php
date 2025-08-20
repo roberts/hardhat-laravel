@@ -27,6 +27,7 @@ class HardhatValidateCommand extends Command
             $issues[] = "Hardhat project directory not found at: {$hardhatPath}";
             $this->error("❌ Hardhat project directory not found at: {$hardhatPath}");
             $this->warn('   Expected structure: Laravel app at /path/app, Hardhat at /path/blockchain');
+
             return self::FAILURE;
         }
 
@@ -39,7 +40,7 @@ class HardhatValidateCommand extends Command
             $this->error('❌ package.json not found in Hardhat project');
         } else {
             $this->line('✅ package.json exists');
-            
+
             // Validate package.json content
             $packageJson = json_decode(file_get_contents($packageJsonPath), true);
             if (! $packageJson) {
@@ -47,9 +48,9 @@ class HardhatValidateCommand extends Command
                 $this->error('❌ package.json is not valid JSON');
             } else {
                 // Check for Hardhat dependency
-                $hasHardhat = isset($packageJson['devDependencies']['hardhat']) 
+                $hasHardhat = isset($packageJson['devDependencies']['hardhat'])
                     || isset($packageJson['dependencies']['hardhat']);
-                
+
                 if (! $hasHardhat) {
                     $warnings[] = 'Hardhat not found in package.json dependencies';
                     $this->warn('⚠️  Hardhat not found in package.json dependencies');
@@ -63,7 +64,7 @@ class HardhatValidateCommand extends Command
         // Check for Hardhat config
         $configJs = $hardhatPath.'/hardhat.config.js';
         $configTs = $hardhatPath.'/hardhat.config.ts';
-        
+
         if (! file_exists($configJs) && ! file_exists($configTs)) {
             $issues[] = 'Hardhat config file not found (hardhat.config.js or hardhat.config.ts)';
             $this->error('❌ Hardhat config file not found');
@@ -80,11 +81,11 @@ class HardhatValidateCommand extends Command
             $suggestions[] = 'Create contracts directory: mkdir contracts';
         } else {
             $this->line('✅ contracts/ directory exists');
-            
+
             // Count contract files
             $contractFiles = glob($contractsPath.'/*.sol');
             $contractCount = count($contractFiles);
-            
+
             if ($contractCount === 0) {
                 $warnings[] = 'No .sol contract files found in contracts/';
                 $this->warn('⚠️  No .sol contract files found in contracts/');
@@ -106,15 +107,15 @@ class HardhatValidateCommand extends Command
             $suggestions[] = 'Create scripts directory: mkdir scripts';
         } else {
             $this->line('✅ scripts/ directory exists');
-            
+
             // Check for recommended scripts
             $recommendedScripts = [
                 'deploy-data.ts' => 'For Laravel evm:deploy integration',
                 'deploy-data.js' => 'For Laravel evm:deploy integration',
-                'call-data.ts' => 'For Laravel evm:call integration', 
+                'call-data.ts' => 'For Laravel evm:call integration',
                 'call-data.js' => 'For Laravel evm:call integration',
             ];
-            
+
             $foundRecommended = false;
             foreach ($recommendedScripts as $script => $purpose) {
                 if (file_exists($scriptsPath.'/'.$script)) {
@@ -122,7 +123,7 @@ class HardhatValidateCommand extends Command
                     $foundRecommended = true;
                 }
             }
-            
+
             if (! $foundRecommended) {
                 $suggestions[] = 'Consider adding deploy-data.ts/js for Laravel integration';
                 $this->warn('⚠️  No recommended integration scripts found');
@@ -163,21 +164,21 @@ class HardhatValidateCommand extends Command
         // Summary
         $this->newLine();
         if (! empty($issues)) {
-            $this->error("❌ Found ".count($issues)." critical issue(s) that must be resolved:");
+            $this->error('❌ Found '.count($issues).' critical issue(s) that must be resolved:');
             foreach ($issues as $issue) {
                 $this->error("   • {$issue}");
             }
         }
 
         if (! empty($warnings)) {
-            $this->warn("⚠️  Found ".count($warnings)." warning(s):");
+            $this->warn('⚠️  Found '.count($warnings).' warning(s):');
             foreach ($warnings as $warning) {
                 $this->warn("   • {$warning}");
             }
         }
 
         if (! empty($suggestions)) {
-            $this->info("💡 Suggestions:");
+            $this->info('💡 Suggestions:');
             foreach ($suggestions as $suggestion) {
                 $this->info("   • {$suggestion}");
             }
@@ -185,11 +186,13 @@ class HardhatValidateCommand extends Command
 
         if (empty($issues) && empty($warnings)) {
             $this->info('🎉 Hardhat project is properly configured for Laravel integration!');
+
             return self::SUCCESS;
         }
 
         if (empty($issues)) {
             $this->info('✅ No critical issues found. Consider addressing warnings for optimal setup.');
+
             return self::SUCCESS;
         }
 
