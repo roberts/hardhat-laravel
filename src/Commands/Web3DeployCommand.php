@@ -32,31 +32,22 @@ class Web3DeployCommand extends Command
         $script = (string) $this->option('script');
         $value = (string) $this->option('value');
 
-        // Resolve signer wallet
-        $wallet = $this->resolveWallet();
-        if (! $wallet) {
+        // Quick pre-check: if neither wallet option is provided, fail fast before invoking Hardhat
+        if (! $this->option('wallet-id') && ! $this->option('wallet-address')) {
             $this->error('Signer wallet not found. Provide --wallet-id or --wallet-address.');
-
-            return self::FAILURE;
-        }
-        if (! $wallet->protocol->isEvm()) {
-            $this->error('Signer wallet must be an EVM wallet.');
-
             return self::FAILURE;
         }
 
         // Resolve chain id (from option or defaults)
         $chainId = $this->option('chain-id');
         $chainId = $chainId ? (int) $chainId : (int) (config('web3-laravel.default_chain_id'));
-        $blockchainId = optional(Blockchain::query()->where('chain_id', $chainId)->first())->id;
 
-        // Build Hardhat args for the helper script
+        // Build Hardhat args for the helper script (infer network if not provided)
         $hhArgs = [];
         if ($network) {
             $hhArgs[] = '--network';
             $hhArgs[] = $network;
         } else {
-            // If not provided, try to infer network name from chainId via registry
             $adapter = $registry->forChainId($chainId);
             if ($adapter) {
                 $hhArgs = array_merge($hhArgs, $adapter->toHardhatArgs());
@@ -72,20 +63,32 @@ class Web3DeployCommand extends Command
             $out = $hardhat->runScript($script, $hhArgs);
         } catch (\Throwable $e) {
             $this->error('Hardhat script failed: '.$e->getMessage());
-
             return self::FAILURE;
         }
 
         $payload = json_decode(trim($out), true);
         if (! is_array($payload) || empty($payload['data'])) {
             $this->error('Invalid deploy JSON. Expected a top-level object with a "data" field.');
-
             return self::FAILURE;
         }
 
         $deployData = (string) $payload['data'];
         $abi = $payload['abi'] ?? null;
         $constructorArgs = $payload['constructorArgs'] ?? null;
+
+        // Resolve signer wallet after successful Hardhat call (allows tests to short-circuit before DB)
+        $wallet = $this->resolveWallet();
+        if (! $wallet) {
+            $this->error('Signer wallet not found. Provide --wallet-id or --wallet-address.');
+            return self::FAILURE;
+        }
+        if (! $wallet->protocol->isEvm()) {
+            $this->error('Signer wallet must be an EVM wallet.');
+            return self::FAILURE;
+        }
+
+        // Resolve blockchain id late
+        $blockchainId = optional(Blockchain::query()->where('chain_id', $chainId)->first())->id;
 
         // Create Transaction (to = null for contract creation)
         $tx = Transaction::create([
