@@ -7,6 +7,7 @@ use Roberts\HardhatLaravel\HardhatWrapper;
 use Roberts\Web3Laravel\Models\Blockchain;
 use Roberts\Web3Laravel\Models\Transaction;
 use Roberts\Web3Laravel\Models\Wallet;
+use Roberts\HardhatLaravel\Protocols\Evm\EvmChainRegistry;
 
 class Web3DeployCommand extends Command
 {
@@ -23,11 +24,11 @@ class Web3DeployCommand extends Command
 
     protected $description = 'Prepare and enqueue an EVM contract deployment transaction using Hardhat-provided deploy data.';
 
-    public function handle(HardhatWrapper $hardhat): int
+    public function handle(HardhatWrapper $hardhat, EvmChainRegistry $registry): int
     {
         $artifact = (string) $this->argument('artifact');
         $argsJson = $this->option('args') ?? '[]';
-        $network = $this->option('network');
+    $network = $this->option('network');
         $script = (string) $this->option('script');
         $value = (string) $this->option('value');
 
@@ -52,6 +53,13 @@ class Web3DeployCommand extends Command
         if ($network) {
             $hhArgs[] = '--network';
             $hhArgs[] = $network;
+        } else {
+            // If not provided, try to infer network name from chainId via registry
+            $adapter = $registry->forChainId($chainId);
+            if ($adapter) {
+                $hhArgs = array_merge($hhArgs, $adapter->toHardhatArgs());
+                $network = $adapter->network();
+            }
         }
         // Pass artifact and args to the script via cli flags
         $hhArgs[] = '--artifact='.$artifact;
