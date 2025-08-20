@@ -7,6 +7,31 @@ This document summarizes that package’s database structure and how EVM operati
 - Package: https://packagist.org/packages/roberts/web3-laravel
 - Repo: https://github.com/roberts/web3-laravel
 
+## Where your Solidity contracts live (Hardhat application)
+
+We standardize on keeping all Solidity sources inside a Hardhat project located at a sibling path to your Laravel app:
+
+Monorepo layout:
+
+```
+laravel-app/           # your Laravel application (this package installed here)
+blockchain/            # Hardhat project (canonical Solidity sources and scripts)
+	├─ contracts/
+	├─ scripts/
+	├─ hardhat.config.ts (or .js)
+	└─ package.json
+```
+
+This package expects Hardhat at `../blockchain` relative to the Laravel base path and will run Hardhat commands there. Contracts are compiled, deployed, and verified from this Hardhat workspace. Laravel never writes ABI files to disk; ABIs are stored only in the `contracts.abi` JSON column when a deploy confirms.
+
+Why this setup:
+
+- Clear separation: Hardhat owns Solidity toolchain; Laravel owns wallet custody and on‑chain execution pipeline.
+- Reproducible builds and verification via Hardhat.
+- Simpler CI and server layout; our diagnostics (`php artisan hardhat:doctor`) assume this path.
+
+Advanced: If you need reusable contracts across apps, publish them as an npm package (e.g., `@org/contracts`) and consume them from the Hardhat project. Avoid duplicating sources across Laravel or this package.
+
 ## Database schema overview
 
 Core tables used by EVM and other protocols:
@@ -73,6 +98,34 @@ High‑level flow:
 	- console.log(JSON.stringify({ artifact, abi, bytecode, constructorArgs: args, data: tx.data }));
 - Your Laravel command runs this script via HardhatWrapper and parses the JSON. The critical field is data (the full deploy data, i.e., bytecode concatenated with ABI‑encoded constructor args).
 
+Example `scripts/deploy-data.ts` (in your Hardhat `blockchain/` project):
+
+```ts
+import { ethers } from "hardhat";
+
+async function main() {
+	// Parse CLI flags like --artifact and --args='["Name","SYM"]'
+	const argv = require('minimist')(process.argv.slice(2));
+	const artifactName: string = argv.artifact;
+	const args = JSON.parse(argv.args ?? '[]');
+
+	const artifact = await ethers.artifacts.readArtifact(artifactName);
+	const factory = new ethers.ContractFactory(artifact.abi, artifact.bytecode);
+	const tx = await factory.getDeployTransaction(...args);
+
+	const out = {
+		artifact: artifact.contractName,
+		abi: artifact.abi,
+		bytecode: artifact.bytecode,
+		constructorArgs: args,
+		data: tx.data,
+	};
+	console.log(JSON.stringify(out));
+}
+
+main().catch((e) => { console.error(e); process.exit(1); });
+```
+
 3) Enqueue a Transaction row
 - Create a Transaction with:
 	- wallet_id: signer wallet (custodial/shared with key stored)
@@ -92,10 +145,8 @@ High‑level flow:
 - Update the Transaction.contract_id and store receipt details in Transaction.meta.
 
 5) Optional: Token/NFT specialization
-- If the artifact represents an ERC‑20, you can either:
-	- Store symbol/name/decimals from deploy metadata, or
-	- Query them post‑deploy via ContractCaller and create a Token row linked to the Contract.
-- For NFTs, create an NftCollection row and relate as needed.
+- After confirmation, this package can auto‑detect ERC‑20/721/1155 from the ABI and create the right records (`tokens` or `nft_collections`).
+- See Token & NFT auto‑detection details: [docs/tokens.md](./tokens.md)
 
 6) Verification via Hardhat
 - After confirmation, kick a Hardhat verify script with the address and constructor args. Update Contract.meta with verified=true and a verification URL (if available). You can store verification results in the Transaction.meta as well.
@@ -121,6 +172,16 @@ Laravel only needs data to enqueue the Transaction. Keeping abi/bytecode/args he
 	- Creates a Transaction (to=null, data=deploy data) and lets the pipeline sign/broadcast/confirm.
 	- A built-in listener persists a Contract row on TransactionConfirmed using receipt.contractAddress and the ABI from tx.meta.
 
+Optional flags and follow‑ups:
+
+- `--auto-verify`: when set, after the deploy confirms and the Contract is persisted, a `VerifyContractJob` is queued automatically. Network is inferred from `--network` or `--chain-id`.
+- Manual verify: `php artisan web3:verify 0xDeployedAddress --chain-id=8453` (or `--network=base`). Add `--queue` with `--contract-id` to run in the background.
+
+Notes:
+
+- Contracts must exist in the Hardhat `blockchain/` project. This package does not read Solidity from Laravel folders or from this package itself.
+- ABIs are not written to disk by Laravel; they’re saved to the `contracts.abi` column when the transaction confirms.
+
 ### CREATE2 option
 
 - If you need deterministic addresses, include a salt and factory address in function_params/meta.
@@ -136,6 +197,23 @@ Laravel only needs data to enqueue the Transaction. Keeping abi/bytecode/args he
 - Reuses the existing prepare → submit → confirm pipeline, events, and retries.
 - Keeps signing in Laravel (custodial/shared wallets) while still using Hardhat for compile/verify.
 - Avoids introducing a new deployments table; Contract + Transaction records are sufficient for most workflows.
+
+## Troubleshooting & diagnostics
+
+- Validate your Hardhat setup and path with:
+
+```bash
+php artisan hardhat:doctor
+```
+
+- Ensure `blockchain/` exists one level up from your Laravel base path and has a valid `hardhat.config.ts` or `.js`.
+
+## FAQ
+
+- Can I keep Solidity inside the Laravel app or this package?
+	- Not recommended. Keep Solidity in the Hardhat project. If you need to reuse contracts, ship them as an npm dependency consumed by the Hardhat project.
+- Where are ABIs stored?
+	- In the database (`contracts.abi`). We do not write ABI files to disk from Laravel.
 
 ## Configuration notes
 

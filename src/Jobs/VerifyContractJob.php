@@ -31,20 +31,22 @@ class VerifyContractJob implements ShouldQueue
         $address = $contract->address;
         try {
             $out = $verify->verify($address, $this->network, $this->constructorArgs, $this->env);
-            $meta = $contract->meta ?? [];
+            /** @var array<string,mixed> $meta */
+            $meta = (array) $contract->getAttribute('meta');
             $meta['verify'] = [
                 'status' => 'ok',
                 'output' => $out,
             ];
-            $contract->meta = $meta;
+            $contract->setAttribute('meta', $meta);
             $contract->save();
         } catch (\Throwable $e) {
-            $meta = $contract->meta ?? [];
+            /** @var array<string,mixed> $meta */
+            $meta = (array) $contract->getAttribute('meta');
             $meta['verify'] = [
                 'status' => 'error',
                 'error' => $e->getMessage(),
             ];
-            $contract->meta = $meta;
+            $contract->setAttribute('meta', $meta);
             $contract->save();
             $this->release(60);
         }

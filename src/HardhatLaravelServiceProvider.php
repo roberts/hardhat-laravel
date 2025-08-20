@@ -86,20 +86,20 @@ class HardhatLaravelServiceProvider extends PackageServiceProvider
             /** @var \Roberts\Web3Laravel\Models\Wallet $this */
             // For now, reuse the CLI via Artisan call to keep logic centralized
             $argsJson = json_encode(array_values($constructorArgs));
-            $cmd = [
-                'web3:deploy',
+            $command = 'web3:deploy';
+            $parameters = [
                 'artifact' => $artifact,
                 '--args' => $argsJson,
                 '--wallet-id' => (string) $this->id,
             ];
             if (isset($opts['chain_id'])) {
-                $cmd['--chain-id'] = (string) $opts['chain_id'];
+                $parameters['--chain-id'] = (string) $opts['chain_id'];
             }
             if (isset($opts['network'])) {
-                $cmd['--network'] = (string) $opts['network'];
+                $parameters['--network'] = (string) $opts['network'];
             }
 
-            return \Illuminate\Support\Facades\Artisan::call(...$cmd);
+            return \Illuminate\Support\Facades\Artisan::call($command, $parameters);
         });
     }
 

@@ -37,8 +37,9 @@ class Web3VerifyCommand extends Command
                 $network = $adapter?->network();
             } elseif ($contractId) {
                 $c = Contract::query()->with('blockchain')->find((int) $contractId);
-                if ($c && $c->blockchain) {
-                    $adapter = $registry->forChainId((int) $c->blockchain->chain_id);
+                $inferredChainId = $c?->blockchain?->chain_id;
+                if ($inferredChainId) {
+                    $adapter = $registry->forChainId((int) $inferredChainId);
                     $network = $adapter?->network();
                 }
             }

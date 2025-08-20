@@ -6,6 +6,7 @@ use Roberts\HardhatLaravel\Protocols\Evm\EvmChainRegistry;
 use Roberts\HardhatLaravel\Services\AbiService;
 use Roberts\Web3Laravel\Events\TransactionConfirmed;
 use Roberts\Web3Laravel\Models\Contract as Web3Contract;
+use Roberts\HardhatLaravel\Jobs\PopulateAssetRecordsJob;
 
 class PersistDeployedContract
 {
@@ -30,6 +31,11 @@ class PersistDeployedContract
                 'abi' => $abi,
             ]
         );
+
+        // If ABI exists, queue a background job to detect token standard and create Token/NFT records
+        if (is_array($abi) && ! empty($abi)) {
+            dispatch(new PopulateAssetRecordsJob($contract->id));
+        }
 
         // Optionally dispatch verification after persist if requested
         $autoVerify = (bool) data_get($tx->meta, 'auto_verify', false);
