@@ -23,7 +23,7 @@ class HardhatUpdateCommand extends Command
             $args[] = '--silent';
         }
 
-        $this->info("Running '" . implode(' ', $args) . "' in {$path}...\n");
+        $this->info("Running '".implode(' ', $args)."' in {$path}...\n");
 
         $result = Process::path($path)->run($args, function (string $type, string $buffer): void {
             $this->output->write($buffer);

@@ -12,6 +12,6 @@ class HardhatLaravel extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-     return HardhatWrapper::class;
+        return HardhatWrapper::class;
     }
 }
