@@ -5,7 +5,7 @@ use Roberts\HardhatLaravel\Tests\TestCase;
 
 it('fails gracefully when no wallet is provided', function () {
     /** @var TestCase $this */
-    $exit = Artisan::call('web3:deploy', [
+    $exit = Artisan::call('evm:deploy', [
         'artifact' => 'MyToken',
         '--args' => '[]',
         '--chain-id' => 8453,

@@ -9,9 +9,9 @@ use Roberts\HardhatLaravel\Protocols\Evm\EvmChainRegistry;
 use Roberts\HardhatLaravel\Services\VerifyService;
 use Roberts\Web3Laravel\Models\Contract;
 
-class Web3VerifyCommand extends Command
+class EVMVerifyCommand extends Command
 {
-    protected $signature = 'web3:verify
+    protected $signature = 'evm:verify
         {address : Deployed contract address}
         {--network= : Hardhat network name (e.g., base, sepolia)}
         {--chain-id= : EVM chain id to infer network}

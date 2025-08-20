@@ -21,7 +21,7 @@ it('infers network from chain id and runs sync verify', function () {
         'blockchain_id' => $chain->id,
     ]);
 
-    $exit = Artisan::call('web3:verify', [
+    $exit = Artisan::call('evm:verify', [
         'address' => $c->address,
         '--chain-id' => 8453,
         '--contract-id' => $c->id,
@@ -40,7 +40,7 @@ it('queues a verify job when --queue is used', function () {
         'blockchain_id' => $chain->id,
     ]);
 
-    $exit = Artisan::call('web3:verify', [
+    $exit = Artisan::call('evm:verify', [
         'address' => $c->address,
         '--chain-id' => 8453,
         '--contract-id' => $c->id,

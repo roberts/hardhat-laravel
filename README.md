@@ -176,7 +176,7 @@ public function deployContract(HardhatWrapper $hardhat): int
 
 	### Eloquent-style helper on Wallet (deployContract)
 
-	For convenience, this package adds a `Wallet::deployContract($artifact, $constructorArgs = [], $opts = [])` macro that invokes the same `web3:deploy` flow and returns the created Transaction id (when parsed from output), for example:
+	For convenience, this package adds a `Wallet::deployContract($artifact, $constructorArgs = [], $opts = [])` macro that invokes the same `evm:deploy` flow and returns the created Transaction id (when parsed from output), for example:
 
 	```php
 	use Roberts\Web3Laravel\Models\Wallet;
@@ -200,7 +200,7 @@ You can use `Process::fake()` to test your code without invoking Node/Hardhat.
 - `php artisan hardhat:test --arg=--network --arg=localhost` — runs tests (use `--hh-env=KEY=VALUE` for env vars)
 - `php artisan hardhat:update` — runs `npm update` in your Hardhat project (supports `--dry-run` and `--silent`)
 
-- `php artisan web3:deploy --artifact="<YourArtifactName>" --script=scripts/deploy-data.ts --args='["arg1"]' --wallet-id=1 --chain-id=8453 --network=base` —
+- `php artisan evm:deploy --artifact="<YourArtifactName>" --script=scripts/deploy-data.ts --args='["arg1"]' --wallet-id=1 --chain-id=8453 --network=base` —
 	fetches deploy tx data from a Hardhat helper script, enqueues a Transaction (to=null, data=deployData), and relies on the
 	web3-laravel transaction pipeline to sign, broadcast, and confirm. On confirmation, a Contract row is persisted automatically.
 

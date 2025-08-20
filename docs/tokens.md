@@ -4,7 +4,7 @@ This package can automatically infer whether a newly deployed contract is a fung
 
 ## When detection runs
 
-1) A deploy is initiated via `php artisan web3:deploy ...` (or `Wallet::deployArtifact()` macro).
+1) A deploy is initiated via `php artisan evm:deploy ...` (or `Wallet::deployArtifact()` macro).
 2) The transaction is submitted and later confirmed by the web3‑laravel pipeline.
 3) The listener `PersistDeployedContract` creates a `contracts` row from the receipt (address, blockchain, creator) and persists the ABI if present on the transaction meta.
 4) If an ABI is present, the listener dispatches `PopulateAssetRecordsJob` with the `contract_id`.

@@ -27,7 +27,7 @@ it('infers --network from chain-id when not provided', function () {
 
     // No DB mocks needed; our CapturingHardhatWrapper throws before any model resolution.
 
-    $exit = Artisan::call('web3:deploy', [
+    $exit = Artisan::call('evm:deploy', [
         'artifact' => 'MyToken',
         '--args' => '[]',
         '--chain-id' => 8453, // Base

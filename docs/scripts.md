@@ -87,7 +87,7 @@ main().catch((e) => { console.error(e); process.exit(1); });
 ```
 
 Laravel command that consumes it:
-- `php artisan web3:deploy --artifact=MyToken --args='["Name","SYM",18]' --wallet-id=1 --chain-id=8453 --network=base`
+- `php artisan evm:deploy --artifact=MyToken --args='["Name","SYM",18]' --wallet-id=1 --chain-id=8453 --network=base`
 - The command uses a wrapper to run `npx hardhat run scripts/deploy-data.ts` and then enqueues a Transaction with `to=null` and `data` equal to the script’s output `data`.
 
 Best practices:
@@ -135,7 +135,7 @@ Laravel usage:
 
 ## Verify script (optional)
 
-Laravel already offers `php artisan web3:verify`, which wraps Hardhat verify. You can keep a script for manual use or custom providers.
+Laravel already offers `php artisan evm:verify`, which wraps Hardhat verify. You can keep a script for manual use or custom providers.
 
 Inputs:
 - --address=0xContract

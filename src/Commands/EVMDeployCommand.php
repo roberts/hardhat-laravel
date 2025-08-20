@@ -9,9 +9,9 @@ use Roberts\Web3Laravel\Models\Blockchain;
 use Roberts\Web3Laravel\Models\Transaction;
 use Roberts\Web3Laravel\Models\Wallet;
 
-class Web3DeployCommand extends Command
+class EVMDeployCommand extends Command
 {
-    protected $signature = 'web3:deploy
+    protected $signature = 'evm:deploy
         {artifact : Contract artifact name (e.g., MyToken)}
         {--args= : Constructor args as JSON array, e.g., ["arg1","arg2"]}
         {--wallet-id= : Signer wallet id}
@@ -34,18 +34,15 @@ class Web3DeployCommand extends Command
         $value = (string) $this->option('value');
         $autoVerify = (bool) $this->option('auto-verify');
 
-        // Quick pre-check: if neither wallet option is provided, fail fast before invoking Hardhat
         if (! $this->option('wallet-id') && ! $this->option('wallet-address')) {
             $this->error('Signer wallet not found. Provide --wallet-id or --wallet-address.');
 
             return self::FAILURE;
         }
 
-        // Resolve chain id (from option or defaults)
         $chainId = $this->option('chain-id');
         $chainId = $chainId ? (int) $chainId : (int) (config('web3-laravel.default_chain_id'));
 
-        // Build Hardhat args for the helper script (infer network if not provided)
         $hhArgs = [];
         if ($network) {
             $hhArgs[] = '--network';
@@ -57,7 +54,6 @@ class Web3DeployCommand extends Command
                 $network = $adapter->network();
             }
         }
-        // Pass artifact and args to the script via cli flags
         $hhArgs[] = '--artifact='.$artifact;
         $hhArgs[] = '--args='.$argsJson;
 
@@ -81,7 +77,6 @@ class Web3DeployCommand extends Command
         $abi = $payload['abi'] ?? null;
         $constructorArgs = $payload['constructorArgs'] ?? null;
 
-        // Resolve signer wallet after successful Hardhat call (allows tests to short-circuit before DB)
         $wallet = $this->resolveWallet();
         if (! $wallet) {
             $this->error('Signer wallet not found. Provide --wallet-id or --wallet-address.');
@@ -94,10 +89,8 @@ class Web3DeployCommand extends Command
             return self::FAILURE;
         }
 
-        // Resolve blockchain id late
         $blockchainId = optional(Blockchain::query()->where('chain_id', $chainId)->first())->id;
 
-        // Create Transaction (to = null for contract creation)
         $tx = Transaction::create([
             'wallet_id' => $wallet->id,
             'blockchain_id' => $blockchainId,

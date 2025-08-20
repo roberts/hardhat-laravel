@@ -167,7 +167,7 @@ Laravel only needs data to enqueue the Transaction. Keeping abi/bytecode/args he
 
 ### Orchestrating from this package
 
-- Command: `php artisan web3:deploy --artifact=MyToken --args='["foo"]' --wallet-id=1 --chain-id=8453 --network=base`
+- Command: `php artisan evm:deploy --artifact=MyToken --args='["foo"]' --wallet-id=1 --chain-id=8453 --network=base`
 	- Uses HardhatWrapper to run a helper script (default `scripts/deploy-data.ts`) that prints the JSON above.
 	- Creates a Transaction (to=null, data=deploy data) and lets the pipeline sign/broadcast/confirm.
 	- A built-in listener persists a Contract row on TransactionConfirmed using receipt.contractAddress and the ABI from tx.meta.
@@ -175,7 +175,7 @@ Laravel only needs data to enqueue the Transaction. Keeping abi/bytecode/args he
 Optional flags and follow‑ups:
 
 - `--auto-verify`: when set, after the deploy confirms and the Contract is persisted, a `VerifyContractJob` is queued automatically. Network is inferred from `--network` or `--chain-id`.
-- Manual verify: `php artisan web3:verify 0xDeployedAddress --chain-id=8453` (or `--network=base`). Add `--queue` with `--contract-id` to run in the background.
+- Manual verify: `php artisan evm:verify 0xDeployedAddress --chain-id=8453` (or `--network=base`). Add `--queue` with `--contract-id` to run in the background.
 
 Notes:
 

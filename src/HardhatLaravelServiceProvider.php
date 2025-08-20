@@ -8,8 +8,9 @@ use Roberts\HardhatLaravel\Commands\HardhatDoctorCommand;
 use Roberts\HardhatLaravel\Commands\HardhatRunCommand;
 use Roberts\HardhatLaravel\Commands\HardhatTestCommand;
 use Roberts\HardhatLaravel\Commands\HardhatUpdateCommand;
-use Roberts\HardhatLaravel\Commands\Web3DeployCommand;
-use Roberts\HardhatLaravel\Commands\Web3VerifyCommand;
+use Roberts\HardhatLaravel\Commands\EVMCallCommand;
+use Roberts\HardhatLaravel\Commands\EVMDeployCommand;
+use Roberts\HardhatLaravel\Commands\EVMVerifyCommand;
 use Roberts\HardhatLaravel\Protocols\Evm\AbstractChain\AbstractMainnetAdapter;
 use Roberts\HardhatLaravel\Protocols\Evm\ApeChain\ApeChainMainnetAdapter;
 use Roberts\HardhatLaravel\Protocols\Evm\Arbitrum\ArbitrumOneAdapter;
@@ -41,8 +42,9 @@ class HardhatLaravelServiceProvider extends PackageServiceProvider
                 HardhatTestCommand::class,
                 HardhatUpdateCommand::class,
                 HardhatDoctorCommand::class,
-                Web3DeployCommand::class,
-                Web3VerifyCommand::class,
+                EVMDeployCommand::class,
+                EVMCallCommand::class,
+                EVMVerifyCommand::class,
             ]);
     }
 
