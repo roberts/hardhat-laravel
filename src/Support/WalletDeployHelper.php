@@ -52,7 +52,7 @@ class WalletDeployHelper
         return null;
     }
 
-        /**
+    /**
      * Enqueue a function call on a contract using evm:call.
      * Returns the created Transaction id when parseable from Artisan output; otherwise null.
      */
