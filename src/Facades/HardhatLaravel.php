@@ -3,14 +3,15 @@
 namespace Roberts\HardhatLaravel\Facades;
 
 use Illuminate\Support\Facades\Facade;
+use Roberts\HardhatLaravel\HardhatWrapper;
 
 /**
- * @see \Roberts\HardhatLaravel\HardhatLaravel
+ * @see HardhatWrapper
  */
 class HardhatLaravel extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \Roberts\HardhatLaravel\HardhatLaravel::class;
+     return HardhatWrapper::class;
     }
 }

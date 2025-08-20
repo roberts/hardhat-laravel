@@ -2,7 +2,7 @@
 
 namespace Roberts\HardhatLaravel\Support;
 
-use Illuminate\Process\ProcessResult;
+use Illuminate\Contracts\Process\ProcessResult;
 
 class HardhatResult
 {
