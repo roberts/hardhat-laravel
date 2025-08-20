@@ -7,6 +7,8 @@
 
 This Laravel package is designed to control [Hardhat](https://hardhat.org) from a [Laravel](https://laravel.org) application through a monorepo with both applications installed in a specific structure. Please read the documentation below for proper creation:
 
+See also: [Web3 integration guide](docs/web3.md) for using this alongside roberts/web3-laravel.
+
 ## Package functionality
 
 - Wrapper around Hardhat, not a replacement: this package doesn’t ship Hardhat (a Node.js tool). It exposes a convenient Laravel API to run the underlying shell commands in your Hardhat project.
