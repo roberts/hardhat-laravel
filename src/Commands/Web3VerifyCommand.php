@@ -46,6 +46,7 @@ class Web3VerifyCommand extends Command
 
         if (! $network) {
             $this->error('Network is required. Provide --network or --chain-id or --contract-id that can infer it.');
+
             return self::FAILURE;
         }
 
@@ -62,19 +63,23 @@ class Web3VerifyCommand extends Command
         if ($queue) {
             if (! $contractId) {
                 $this->error('--queue requires --contract-id to update the correct record.');
+
                 return self::FAILURE;
             }
             Queue::push(new VerifyContractJob((int) $contractId, (string) $network, $constructorArgs));
             $this->info('Queued verification job for contract id='.$contractId.' on network='.$network.'.');
+
             return self::SUCCESS;
         }
 
         try {
             $out = $verify->verify($address, (string) $network, $constructorArgs);
             $this->line(trim($out));
+
             return self::SUCCESS;
         } catch (\Throwable $e) {
             $this->error('Verification failed: '.$e->getMessage());
+
             return self::FAILURE;
         }
     }

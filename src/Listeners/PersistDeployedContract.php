@@ -2,10 +2,10 @@
 
 namespace Roberts\HardhatLaravel\Listeners;
 
+use Roberts\HardhatLaravel\Protocols\Evm\EvmChainRegistry;
 use Roberts\HardhatLaravel\Services\AbiService;
 use Roberts\Web3Laravel\Events\TransactionConfirmed;
 use Roberts\Web3Laravel\Models\Contract as Web3Contract;
-use Roberts\HardhatLaravel\Protocols\Evm\EvmChainRegistry;
 
 class PersistDeployedContract
 {
@@ -19,7 +19,7 @@ class PersistDeployedContract
             return;
         }
 
-    $abi = app(AbiService::class)->normalize(data_get($tx->meta, 'abi'));
+        $abi = app(AbiService::class)->normalize(data_get($tx->meta, 'abi'));
         $creator = $tx->from;
 
         $contract = Web3Contract::query()->firstOrCreate(

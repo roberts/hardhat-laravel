@@ -32,7 +32,7 @@ class Web3DeployCommand extends Command
         $network = $this->option('network');
         $script = (string) $this->option('script');
         $value = (string) $this->option('value');
-    $autoVerify = (bool) $this->option('auto-verify');
+        $autoVerify = (bool) $this->option('auto-verify');
 
         // Quick pre-check: if neither wallet option is provided, fail fast before invoking Hardhat
         if (! $this->option('wallet-id') && ! $this->option('wallet-address')) {

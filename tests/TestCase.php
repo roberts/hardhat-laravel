@@ -31,7 +31,7 @@ class TestCase extends Orchestra
     public function getEnvironmentSetUp($app)
     {
         config()->set('database.default', 'testing');
-    config()->set('app.key', 'base64:'.base64_encode(str_repeat('a', 32)));
+        config()->set('app.key', 'base64:'.base64_encode(str_repeat('a', 32)));
 
         // Load web3-laravel migrations so its models/factories work in tests
         $migs = base_path('vendor/roberts/web3-laravel/database/migrations');

@@ -17,6 +17,7 @@ class AbiService
         }
         if (is_string($abi) && $abi !== '') {
             $decoded = json_decode($abi, true);
+
             return is_array($decoded) ? $decoded : null;
         }
 

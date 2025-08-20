@@ -19,8 +19,7 @@ class VerifyContractJob implements ShouldQueue
         public string $network,
         public array $constructorArgs = [],
         public array $env = [],
-    ) {
-    }
+    ) {}
 
     public function handle(VerifyService $verify): void
     {

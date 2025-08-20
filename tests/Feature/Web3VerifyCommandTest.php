@@ -11,8 +11,8 @@ use Roberts\Web3Laravel\Models\Contract;
 it('infers network from chain id and runs sync verify', function () {
     /** @var TestCase $this */
     Process::fake([
-        '*' => Process::result(0, "Verified
-"),
+        '*' => Process::result(0, 'Verified
+'),
     ]);
 
     $chain = Blockchain::factory()->create(['chain_id' => 8453]);

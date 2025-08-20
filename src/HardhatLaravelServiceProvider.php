@@ -3,10 +3,8 @@
 namespace Roberts\HardhatLaravel;
 
 use Illuminate\Support\Facades\Log;
-use Roberts\HardhatLaravel\Protocols\Evm\Polygon\PolygonMainnetAdapter;
 use Roberts\HardhatLaravel\Commands\HardhatCompileCommand;
 use Roberts\HardhatLaravel\Commands\HardhatDoctorCommand;
-use Roberts\HardhatLaravel\Commands\HardhatLaravelCommand;
 use Roberts\HardhatLaravel\Commands\HardhatRunCommand;
 use Roberts\HardhatLaravel\Commands\HardhatTestCommand;
 use Roberts\HardhatLaravel\Commands\HardhatUpdateCommand;
@@ -19,7 +17,7 @@ use Roberts\HardhatLaravel\Protocols\Evm\Base\BaseMainnetAdapter;
 use Roberts\HardhatLaravel\Protocols\Evm\Ethereum\EthereumMainnetAdapter;
 use Roberts\HardhatLaravel\Protocols\Evm\EvmChainRegistry;
 use Roberts\HardhatLaravel\Protocols\Evm\Optimism\OptimismMainnetAdapter;
- 
+use Roberts\HardhatLaravel\Protocols\Evm\Polygon\PolygonMainnetAdapter;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -100,6 +98,7 @@ class HardhatLaravelServiceProvider extends PackageServiceProvider
             if (isset($opts['network'])) {
                 $cmd['--network'] = (string) $opts['network'];
             }
+
             return \Illuminate\Support\Facades\Artisan::call(...$cmd);
         });
     }
