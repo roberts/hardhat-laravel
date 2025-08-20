@@ -20,7 +20,7 @@ class TestCase extends Orchestra
             return 'Database\\Factories\\'.class_basename($modelName).'Factory';
         });
 
-    // No-op: macros are exposed via helper class now.
+        // No-op: macros are exposed via helper class now.
     }
 
     protected function getPackageProviders($app)

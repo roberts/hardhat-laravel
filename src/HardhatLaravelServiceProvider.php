@@ -66,7 +66,7 @@ class HardhatLaravelServiceProvider extends PackageServiceProvider
             \Roberts\HardhatLaravel\Listeners\PersistDeployedContract::class
         );
 
-    // Note: Eloquent Model doesn't include Macroable; macros are provided via helper class instead.
+        // Note: Eloquent Model doesn't include Macroable; macros are provided via helper class instead.
     }
 
     public function packageRegistered(): void
@@ -95,4 +95,3 @@ class HardhatLaravelServiceProvider extends PackageServiceProvider
         });
     }
 }
-

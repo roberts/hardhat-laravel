@@ -9,11 +9,24 @@ it('deployContract returns transaction id parsed from output', function () {
     $wallet = Wallet::factory()->create();
 
     $original = Artisan::getFacadeRoot();
-    $fake = new class('Enqueued deployment transaction id=123 (status=pending).', 0) {
+    $fake = new class('Enqueued deployment transaction id=123 (status=pending).', 0)
+    {
         public function __construct(public string $out, public int $status) {}
-        public function call($command, array $parameters = []) { return $this->status; }
-        public function output() { return $this->out; }
-        public function __call($name, $args) { return null; }
+
+        public function call($command, array $parameters = [])
+        {
+            return $this->status;
+        }
+
+        public function output()
+        {
+            return $this->out;
+        }
+
+        public function __call($name, $args)
+        {
+            return null;
+        }
     };
     Artisan::swap($fake);
 
@@ -35,11 +48,24 @@ it('deployContract returns null when id cannot be parsed', function () {
     $wallet = Wallet::factory()->create();
 
     $original = Artisan::getFacadeRoot();
-    $fake = new class('No id here', 0) {
+    $fake = new class('No id here', 0)
+    {
         public function __construct(public string $out, public int $status) {}
-        public function call($command, array $parameters = []) { return $this->status; }
-        public function output() { return $this->out; }
-        public function __call($name, $args) { return null; }
+
+        public function call($command, array $parameters = [])
+        {
+            return $this->status;
+        }
+
+        public function output()
+        {
+            return $this->out;
+        }
+
+        public function __call($name, $args)
+        {
+            return null;
+        }
     };
     Artisan::swap($fake);
 
@@ -57,11 +83,24 @@ it('deployArtifact returns artisan status code', function () {
     $wallet = Wallet::factory()->create();
 
     $original = Artisan::getFacadeRoot();
-    $fake = new class('ignored', 0) {
+    $fake = new class('ignored', 0)
+    {
         public function __construct(public string $out, public int $status) {}
-        public function call($command, array $parameters = []) { return $this->status; }
-        public function output() { return $this->out; }
-        public function __call($name, $args) { return null; }
+
+        public function call($command, array $parameters = [])
+        {
+            return $this->status;
+        }
+
+        public function output()
+        {
+            return $this->out;
+        }
+
+        public function __call($name, $args)
+        {
+            return null;
+        }
     };
     Artisan::swap($fake);
 
