@@ -13,7 +13,7 @@ class HardhatCompileCommand extends Command
 
     public function handle(HardhatWrapper $hardhat): int
     {
-    $env = $this->parseEnv($this->option('hh-env'));
+        $env = $this->parseEnv($this->option('hh-env'));
         $result = $hardhat->runStreaming('compile', [], $env, function ($type, $buffer) {
             $this->output->write($buffer);
         });

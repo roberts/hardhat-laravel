@@ -14,7 +14,7 @@ class HardhatTestCommand extends Command
     public function handle(HardhatWrapper $hardhat): int
     {
         $args = $this->option('arg');
-    $env = $this->parseEnv($this->option('hh-env'));
+        $env = $this->parseEnv($this->option('hh-env'));
 
         $result = $hardhat->runStreaming('test', $args, $env, function ($type, $buffer) {
             $this->output->write($buffer);

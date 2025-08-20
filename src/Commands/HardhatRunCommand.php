@@ -15,7 +15,7 @@ class HardhatRunCommand extends Command
     {
         $script = $this->argument('script');
         $args = $this->option('arg');
-    $env = $this->parseEnv($this->option('hh-env'));
+        $env = $this->parseEnv($this->option('hh-env'));
 
         $result = $hardhat->runScriptStreaming($script, $args, $env, function ($type, $buffer) {
             $this->output->write($buffer);
