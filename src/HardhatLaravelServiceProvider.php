@@ -11,6 +11,7 @@ use Roberts\HardhatLaravel\Commands\HardhatDoctorCommand;
 use Roberts\HardhatLaravel\Commands\HardhatRunCommand;
 use Roberts\HardhatLaravel\Commands\HardhatTestCommand;
 use Roberts\HardhatLaravel\Commands\HardhatUpdateCommand;
+use Roberts\HardhatLaravel\Commands\HardhatValidateCommand;
 use Roberts\HardhatLaravel\Protocols\Evm\AbstractChain\AbstractMainnetAdapter;
 use Roberts\HardhatLaravel\Protocols\Evm\ApeChain\ApeChainMainnetAdapter;
 use Roberts\HardhatLaravel\Protocols\Evm\Arbitrum\ArbitrumOneAdapter;
@@ -42,6 +43,7 @@ class HardhatLaravelServiceProvider extends PackageServiceProvider
                 HardhatTestCommand::class,
                 HardhatUpdateCommand::class,
                 HardhatDoctorCommand::class,
+                HardhatValidateCommand::class,
                 EVMDeployCommand::class,
                 EVMCallCommand::class,
                 EVMVerifyCommand::class,
