@@ -6,6 +6,7 @@ use Roberts\HardhatLaravel\Commands\HardhatCompileCommand;
 use Roberts\HardhatLaravel\Commands\HardhatLaravelCommand;
 use Roberts\HardhatLaravel\Commands\HardhatRunCommand;
 use Roberts\HardhatLaravel\Commands\HardhatTestCommand;
+use Roberts\HardhatLaravel\Commands\HardhatUpdateCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -28,6 +29,7 @@ class HardhatLaravelServiceProvider extends PackageServiceProvider
                 HardhatCompileCommand::class,
                 HardhatRunCommand::class,
                 HardhatTestCommand::class,
+                HardhatUpdateCommand::class,
             ]);
     }
 

@@ -7,6 +7,14 @@
 
 This Laravel package is designed to control [Hardhat](https://hardhat.org) from a [Laravel](https://laravel.org) application through a monorepo with both applications installed in a specific structure. Please read the documentation below for proper creation:
 
+## Package functionality
+
+- Wrapper around Hardhat, not a replacement: this package doesn’t ship Hardhat (a Node.js tool). It exposes a convenient Laravel API to run the underlying shell commands in your Hardhat project.
+- Artisan command(s): provides Artisan commands you can run or schedule to automate workflows (e.g., compile, run scripts, tests; you can also create a scheduled “update” flow that runs `npm update` in your Hardhat project).
+- Process execution: uses Laravel’s Process facade to execute commands within your configured Hardhat project directory, enabling PHP to interoperate with Node/Hardhat safely.
+- Service provider: registers the commands and a singleton wrapper that manages the path to your Hardhat project and exposes helper methods.
+- Configuration: includes a publishable config file to set the path to your Hardhat project (defaults to `base_path('blockchain')`). See the Configuration section below.
+
 ## Laravel & Hardhat Monorepo Creation
 
 Before installing this package, you need to create the monorepo structure with an app folder for your Laravel application and a blockchain folder for Hardhat.
@@ -135,6 +143,18 @@ You can use `Process::fake()` to test your code without invoking Node/Hardhat.
 - `php artisan hardhat:compile` — runs `npx hardhat compile`
 - `php artisan hardhat:run scripts/deploy.ts --arg=--network --arg=sepolia --env=PRIVATE_KEY=...` — runs a script
 - `php artisan hardhat:test --arg=--network --arg=localhost` — runs tests
+- `php artisan hardhat:update` — runs `npm update` in your Hardhat project (supports `--dry-run` and `--silent`)
+
+### Scheduling npm update
+
+In `app/Console/Kernel.php` you can schedule the update:
+
+```php
+protected function schedule(Schedule $schedule): void
+{
+	$schedule->command('hardhat:update --silent')->weekly();
+}
+```
 
 ## Testing
 
