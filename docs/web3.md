@@ -57,6 +57,86 @@ Other tables (key_releases, nft_collections, wallet_nfts, wallet_tokens) support
 - Transaction pipeline (async)
 	- Transactions flow through prepare → submit → confirm jobs, updating status and tx_hash, and emitting events. This keeps network calls off the request thread and centralizes error handling.
 
+## Contract deployment using the Transaction pipeline (no deployments table)
+
+Instead of adding a separate deployments table, leverage the existing Transaction model and EVM adapter to broadcast deploy transactions. Hardhat remains the compile/verify tool; Laravel signs and submits the deployment as a normal EVM transaction (to=null, data=bytecode+constructor encoding).
+
+High‑level flow:
+
+1) Compile with Hardhat
+- Use Hardhat to compile your contracts. You’ll read ABI/bytecode from the artifact JSON.
+
+2) Build deploy data (preferred: from a small Hardhat helper)
+- Create a tiny Hardhat script (e.g., scripts/deploy-data.ts) that loads the artifact and computes the deploy transaction data via ethers:
+	- const factory = new ethers.ContractFactory(abi, bytecode);
+	- const tx = await factory.getDeployTransaction(...args);
+	- console.log(JSON.stringify({ artifact, abi, bytecode, constructorArgs: args, data: tx.data }));
+- Your Laravel command runs this script via HardhatWrapper and parses the JSON. The critical field is data (the full deploy data, i.e., bytecode concatenated with ABI‑encoded constructor args).
+
+3) Enqueue a Transaction row
+- Create a Transaction with:
+	- wallet_id: signer wallet (custodial/shared with key stored)
+	- blockchain_id/chain_id: target chain
+	- to: null (contract creation)
+	- value: '0' (unless your constructor is payable)
+	- data: the deploy data from step 2
+	- is_1559 and gas fields as desired (or leave for the adapter/service to fill defaults)
+	- function: 'deploy_contract' (label for analytics)
+	- function_params: { artifact, constructor_args, abi_present: true }
+	- meta: optionally stash abi and bytecode for later persistence/verification
+- Let the existing prepare job fill nonce and chain defaults; submit job will sign and send; confirm job will track status.
+
+4) Persist the Contract after confirmation
+- In your confirmation handling (listener or a small post‑confirm hook), fetch the receipt via EvmProtocolAdapter::checkConfirmations. When confirmed, the receipt will contain contractAddress.
+- Upsert a Contract row with address=contractAddress, blockchain_id, creator=wallet.address, and abi (take from meta/artifact).
+- Update the Transaction.contract_id and store receipt details in Transaction.meta.
+
+5) Optional: Token/NFT specialization
+- If the artifact represents an ERC‑20, you can either:
+	- Store symbol/name/decimals from deploy metadata, or
+	- Query them post‑deploy via ContractCaller and create a Token row linked to the Contract.
+- For NFTs, create an NftCollection row and relate as needed.
+
+6) Verification via Hardhat
+- After confirmation, kick a Hardhat verify script with the address and constructor args. Update Contract.meta with verified=true and a verification URL (if available). You can store verification results in the Transaction.meta as well.
+
+### Data handoff contract between Hardhat and Laravel
+
+From scripts/deploy-data.ts (example):
+
+{
+	"artifact": "MyToken",
+	"abi": [ ... ],
+	"bytecode": "0x...",
+	"constructorArgs": ["arg1", "arg2"],
+	"data": "0x..." // full deploy data used as Transaction.data
+}
+
+Laravel only needs data to enqueue the Transaction. Keeping abi/bytecode/args helps later persistence and verification.
+
+### Orchestrating from this package
+
+- Command: `php artisan web3:deploy --artifact=MyToken --args='["foo"]' --wallet-id=1 --chain-id=8453 --network=base`
+	- Uses HardhatWrapper to run a helper script (default `scripts/deploy-data.ts`) that prints the JSON above.
+	- Creates a Transaction (to=null, data=deploy data) and lets the pipeline sign/broadcast/confirm.
+	- A built-in listener persists a Contract row on TransactionConfirmed using receipt.contractAddress and the ABI from tx.meta.
+
+### CREATE2 option
+
+- If you need deterministic addresses, include a salt and factory address in function_params/meta.
+- You can precompute the address off‑chain and store it in Transaction.meta.precomputed_address for idempotency checks. The actual deploy still uses data and to=null.
+
+### Error handling and idempotency
+
+- Duplicate broadcasts are naturally reduced by nonce control and tx_hash uniqueness.
+- If a prior deploy succeeded, your post‑confirm hook can detect an existing Contract at the precomputed or receipt address and skip duplicate inserts.
+
+### Why this approach
+
+- Reuses the existing prepare → submit → confirm pipeline, events, and retries.
+- Keeps signing in Laravel (custodial/shared wallets) while still using Hardhat for compile/verify.
+- Avoids introducing a new deployments table; Contract + Transaction records are sufficient for most workflows.
+
 ## Configuration notes
 
 - Default RPC & chain:

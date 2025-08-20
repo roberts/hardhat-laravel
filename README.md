@@ -147,6 +147,10 @@ You can use `Process::fake()` to test your code without invoking Node/Hardhat.
 - `php artisan hardhat:test --arg=--network --arg=localhost` — runs tests
 - `php artisan hardhat:update` — runs `npm update` in your Hardhat project (supports `--dry-run` and `--silent`)
 
+- `php artisan web3:deploy --artifact=MyToken --args='["arg1"]' --wallet-id=1 --chain-id=8453 --network=base` —
+	fetches deploy tx data from a Hardhat helper script, enqueues a Transaction (to=null, data=deployData), and relies on the
+	web3-laravel transaction pipeline to sign, broadcast, and confirm. On confirmation, a Contract row is persisted automatically.
+
 ### Scheduling npm update
 
 In `app/Console/Kernel.php` you can schedule the update:

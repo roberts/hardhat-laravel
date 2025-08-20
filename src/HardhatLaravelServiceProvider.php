@@ -7,6 +7,7 @@ use Roberts\HardhatLaravel\Commands\HardhatLaravelCommand;
 use Roberts\HardhatLaravel\Commands\HardhatRunCommand;
 use Roberts\HardhatLaravel\Commands\HardhatTestCommand;
 use Roberts\HardhatLaravel\Commands\HardhatUpdateCommand;
+use Roberts\HardhatLaravel\Commands\Web3DeployCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -30,7 +31,17 @@ class HardhatLaravelServiceProvider extends PackageServiceProvider
                 HardhatRunCommand::class,
                 HardhatTestCommand::class,
                 HardhatUpdateCommand::class,
+                Web3DeployCommand::class,
             ]);
+    }
+
+    public function bootingPackage(): void
+    {
+        // Listen for confirmed transactions to persist deployed contracts automatically
+        \Illuminate\Support\Facades\Event::listen(
+            \Roberts\Web3Laravel\Events\TransactionConfirmed::class,
+            \Roberts\HardhatLaravel\Listeners\PersistDeployedContract::class
+        );
     }
 
     public function packageRegistered(): void
